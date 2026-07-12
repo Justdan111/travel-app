@@ -1,10 +1,11 @@
 import { Feather } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { DestinationCarousel } from '@/components/destination-carousel';
+import { DestinationDeck } from '@/components/destination-deck';
 import {
   AVATAR_URI,
   DESTINATIONS,
@@ -13,10 +14,10 @@ import {
 } from '@/data/destinations';
 
 export default function HomeScreen() {
+  const router = useRouter();
   const [region, setRegion] = useState<Region>('South America');
 
   const destinations = DESTINATIONS.filter((d) => d.region === region);
-  const initialIndex = destinations.length > 1 ? 1 : 0;
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-canvas">
@@ -97,10 +98,11 @@ export default function HomeScreen() {
         </ScrollView>
 
         <View className="mt-7">
-          <DestinationCarousel
-            key={region}
+          <DestinationDeck
             destinations={destinations}
-            initialIndex={initialIndex}
+            onOpenDestination={(destination) =>
+              router.push(`/trip/${destination.id}`)
+            }
           />
         </View>
       </ScrollView>

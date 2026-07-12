@@ -4,48 +4,22 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import Animated, {
-  Extrapolation,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
 
 import type { Destination } from '@/data/destinations';
 
 type Props = {
   destination: Destination;
-  index: number;
-  scrollX: SharedValue<number>;
-  snapInterval: number;
   width: number;
   height: number;
+  onPress?: () => void;
 };
 
-export function DestinationCard({
-  destination,
-  index,
-  scrollX,
-  snapInterval,
-  width,
-  height,
-}: Props) {
+export function DestinationCard({ destination, width, height, onPress }: Props) {
   const [liked, setLiked] = useState(false);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const position = (index * snapInterval - scrollX.value) / snapInterval;
-    const scale = interpolate(
-      position,
-      [-1, 0, 1],
-      [0.88, 1, 0.88],
-      Extrapolation.CLAMP,
-    );
-    return { transform: [{ scale }] };
-  });
-
   return (
-    <Animated.View
-      style={[{ width, height }, animatedStyle]}
+    <View
+      style={{ width, height }}
       className="overflow-hidden rounded-[36px] bg-neutral-300"
     >
       <Image
@@ -115,7 +89,10 @@ export function DestinationCard({
           </View>
         </View>
 
-        <View className="mx-4 mb-4 mt-5 h-[60px] overflow-hidden rounded-full">
+        <Pressable
+          onPress={onPress}
+          className="mx-4 mb-4 mt-5 h-[60px] overflow-hidden rounded-full"
+        >
           <BlurView
             intensity={25}
             tint="dark"
@@ -132,8 +109,8 @@ export function DestinationCard({
               <Feather name="chevron-right" size={22} color="#191919" />
             </View>
           </BlurView>
-        </View>
+        </Pressable>
       </View>
-    </Animated.View>
+    </View>
   );
 }

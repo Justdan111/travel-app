@@ -1,26 +1,22 @@
 import '../global.css';
 
-import { Tabs } from 'expo-router/js-tabs';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-
-import { TabBar } from '@/components/tab-bar';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style="dark" />
-      <Tabs
-        tabBar={(props) => <TabBar {...props} />}
+      <Stack
         screenOptions={{
           headerShown: false,
-          sceneStyle: { backgroundColor: '#F4F3F1' },
+          contentStyle: { backgroundColor: '#F4F3F1' },
         }}
       >
-        <Tabs.Screen name="index" />
-        <Tabs.Screen name="trips" />
-        <Tabs.Screen name="favorites" />
-        <Tabs.Screen name="menu" />
-      </Tabs>
-    </>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="trip/[id]" />
+      </Stack>
+    </GestureHandlerRootView>
   );
 }
