@@ -117,7 +117,7 @@ export default function HomeScreen() {
           <DestinationDeck
             destinations={destinations}
             onOpenDestination={(destination) =>
-              router.push(`/trip/${destination.id}`)
+              router.push(`/destination/${destination.id}`)
             }
           />
         </View>

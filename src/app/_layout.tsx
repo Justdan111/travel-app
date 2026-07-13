@@ -15,6 +15,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="destination/[id]" />
         <Stack.Screen name="trip/[id]" />
       </Stack>
     </GestureHandlerRootView>
