@@ -1,6 +1,7 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import { Pressable, View } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function DotsGrid({ color }: { color: string }) {
@@ -35,10 +36,20 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
   const { bottom } = useSafeAreaInsets();
 
   return (
-    <View
-      className="absolute left-6 right-6 h-[72px] flex-row items-center justify-between rounded-full bg-[#161616] px-3"
-      style={{ bottom: Math.max(bottom, 20) }}
+    <Animated.View
+      entering={FadeInUp.duration(650)
+        .delay(500)
+        .springify()
+        .damping(17)
+        .stiffness(150)}
+      style={{
+        position: 'absolute',
+        left: 24,
+        right: 24,
+        bottom: Math.max(bottom, 20),
+      }}
     >
+      <View className="h-[72px] flex-row items-center justify-between rounded-full bg-[#161616] px-3">
       {state.routes.map((route, index) => {
         const focused = state.index === index;
 
@@ -69,6 +80,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
           </Pressable>
         );
       })}
-    </View>
+      </View>
+    </Animated.View>
   );
 }
