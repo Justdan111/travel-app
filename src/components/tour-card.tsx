@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { AnimatedHeart } from '@/components/animated-heart';
 import type { Tour } from '@/data/destinations';
 
 type Props = {
@@ -31,11 +32,7 @@ export function TourCard({ tour, width, onPress }: Props) {
           hitSlop={8}
           className="absolute right-3 top-3 h-11 w-11 items-center justify-center rounded-full bg-white"
         >
-          <Ionicons
-            name={liked ? 'heart' : 'heart-outline'}
-            size={20}
-            color={liked ? '#FF5A5F' : '#191919'}
-          />
+          <AnimatedHeart active={liked} size={20} inactiveColor="#191919" />
         </Pressable>
       </View>
 

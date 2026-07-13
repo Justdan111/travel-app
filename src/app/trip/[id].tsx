@@ -3,9 +3,12 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AnimatedHeart } from '@/components/animated-heart';
 import { DESTINATIONS, getTrip, type TripDay } from '@/data/destinations';
+import { useFavorites } from '@/store/favorites';
 
 const TRIP_TABS = ['Tour schedule', 'Accomodation', 'Booking details'];
 
@@ -99,9 +102,10 @@ export default function TripScreen() {
     DESTINATIONS.find((d) => d.id === id) ?? DESTINATIONS[0];
   const trip = getTrip(destination);
 
+  const { isFavorite, toggle } = useFavorites();
+  const liked = isFavorite(destination.id);
   const [activeTab, setActiveTab] = useState(TRIP_TABS[0]);
   const [expandedDay, setExpandedDay] = useState(1);
-  const [liked, setLiked] = useState(false);
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-canvas">
@@ -116,13 +120,9 @@ export default function TripScreen() {
         </View>
         <CircleButton
           icon={
-            <Ionicons
-              name={liked ? 'heart' : 'heart-outline'}
-              size={20}
-              color={liked ? '#FF5A5F' : '#191919'}
-            />
+            <AnimatedHeart active={liked} size={20} inactiveColor="#191919" />
           }
-          onPress={() => setLiked((v) => !v)}
+          onPress={() => toggle(destination.id)}
         />
       </View>
 
@@ -166,23 +166,32 @@ export default function TripScreen() {
           </Text>
 
           <View className="mt-5 gap-4 px-5">
-            {trip.days.map((day) => (
-              <DayCard
+            {trip.days.map((day, index) => (
+              <Animated.View
                 key={day.day}
-                day={day}
-                expanded={expandedDay === day.day}
-                onToggle={() =>
-                  setExpandedDay((current) =>
-                    current === day.day ? 0 : day.day,
-                  )
-                }
-              />
+                entering={FadeInDown.duration(500)
+                  .delay(150 + index * 70)
+                  .springify()
+                  .damping(18)
+                  .stiffness(170)}
+              >
+                <DayCard
+                  day={day}
+                  expanded={expandedDay === day.day}
+                  onToggle={() =>
+                    setExpandedDay((current) =>
+                      current === day.day ? 0 : day.day,
+                    )
+                  }
+                />
+              </Animated.View>
             ))}
           </View>
         </ScrollView>
       </View>
 
-      <View
+      <Animated.View
+        entering={FadeInUp.duration(600).delay(350).springify().damping(18).stiffness(160)}
         className="absolute left-5 right-5"
         style={{ bottom: Math.max(bottom, 20) }}
       >
@@ -191,7 +200,7 @@ export default function TripScreen() {
             Book a tour
           </Text>
         </Pressable>
-      </View>
+      </Animated.View>
     </SafeAreaView>
   );
 }

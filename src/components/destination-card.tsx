@@ -2,10 +2,11 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { AnimatedHeart } from '@/components/animated-heart';
 import type { Destination } from '@/data/destinations';
+import { useFavorites } from '@/store/favorites';
 
 type Props = {
   destination: Destination;
@@ -15,7 +16,8 @@ type Props = {
 };
 
 export function DestinationCard({ destination, width, height, onPress }: Props) {
-  const [liked, setLiked] = useState(false);
+  const { isFavorite, toggle } = useFavorites();
+  const liked = isFavorite(destination.id);
 
   return (
     <View
@@ -41,7 +43,7 @@ export function DestinationCard({ destination, width, height, onPress }: Props) 
       />
 
       <Pressable
-        onPress={() => setLiked((v) => !v)}
+        onPress={() => toggle(destination.id)}
         className="absolute right-5 top-5 h-12 w-12 items-center justify-center overflow-hidden rounded-full"
         hitSlop={8}
       >
@@ -60,11 +62,7 @@ export function DestinationCard({ destination, width, height, onPress }: Props) 
             borderColor: 'rgba(255,255,255,0.35)',
           }}
         />
-        <Ionicons
-          name={liked ? 'heart' : 'heart-outline'}
-          size={22}
-          color={liked ? '#FF5A5F' : '#FFFFFF'}
-        />
+        <AnimatedHeart active={liked} size={22} />
       </Pressable>
 
       <View className="absolute bottom-0 w-full">

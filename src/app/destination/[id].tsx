@@ -10,10 +10,21 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AnimatedHeart } from '@/components/animated-heart';
 import { TourCard } from '@/components/tour-card';
 import { DESTINATIONS } from '@/data/destinations';
+import { useFavorites } from '@/store/favorites';
+
+// Staggered entrance for the sheet content.
+const enterFrom = (order: number) =>
+  FadeInDown.duration(550)
+    .delay(120 + order * 90)
+    .springify()
+    .damping(18)
+    .stiffness(170);
 
 function CircleButton({
   icon,
@@ -48,7 +59,8 @@ export default function DestinationScreen() {
 
   const destination = DESTINATIONS.find((d) => d.id === id) ?? DESTINATIONS[0];
 
-  const [liked, setLiked] = useState(false);
+  const { isFavorite, toggle } = useFavorites();
+  const liked = isFavorite(destination.id);
   const [expanded, setExpanded] = useState(false);
 
   const heroHeight = height * 0.46;
@@ -62,12 +74,14 @@ export default function DestinationScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: bottom + 32 }}
       >
-        <Image
-          source={{ uri: destination.image }}
-          style={{ width: '100%', height: heroHeight }}
-          contentFit="cover"
-          transition={250}
-        />
+        <Animated.View entering={FadeIn.duration(500)}>
+          <Image
+            source={{ uri: destination.image }}
+            style={{ width: '100%', height: heroHeight }}
+            contentFit="cover"
+            transition={250}
+          />
+        </Animated.View>
 
         <View
           className="-mt-9 rounded-t-[36px] bg-white"
@@ -75,7 +89,10 @@ export default function DestinationScreen() {
         >
           <View className="mt-3 h-1.5 w-12 self-center rounded-full bg-neutral-200" />
 
-          <View className="mt-6 flex-row items-start justify-between px-6">
+          <Animated.View
+            entering={enterFrom(0)}
+            className="mt-6 flex-row items-start justify-between px-6"
+          >
             <Text className="flex-1 pr-3 text-[30px] font-bold text-ink">
               {destination.name}
             </Text>
@@ -85,9 +102,12 @@ export default function DestinationScreen() {
                 {destination.rating.toFixed(1)}
               </Text>
             </View>
-          </View>
+          </Animated.View>
 
-          <View className="mt-2 flex-row items-center justify-between px-6">
+          <Animated.View
+            entering={enterFrom(1)}
+            className="mt-2 flex-row items-center justify-between px-6"
+          >
             <View className="flex-row items-center gap-2">
               <Text className="text-[18px]">{destination.flag}</Text>
               <Text className="text-[16px] text-ink">{destination.country}</Text>
@@ -95,50 +115,57 @@ export default function DestinationScreen() {
             <Text className="text-[15px] font-medium text-ink underline">
               {destination.reviews} reviews
             </Text>
-          </View>
+          </Animated.View>
 
-          <Text
-            className="mt-5 px-6 text-[16px] leading-[24px] text-[#4B5563]"
-            numberOfLines={expanded ? undefined : 2}
-          >
-            {destination.description}
-          </Text>
-          <Pressable
-            onPress={() => setExpanded((v) => !v)}
-            hitSlop={6}
-            className="px-6"
-          >
-            <Text className="mt-2 text-[16px] font-medium text-ink underline">
-              {expanded ? 'Read less' : 'Read more'}
+          <Animated.View entering={enterFrom(2)}>
+            <Text
+              className="mt-5 px-6 text-[16px] leading-[24px] text-[#4B5563]"
+              numberOfLines={expanded ? undefined : 2}
+            >
+              {destination.description}
             </Text>
-          </Pressable>
+            <Pressable
+              onPress={() => setExpanded((v) => !v)}
+              hitSlop={6}
+              className="px-6"
+            >
+              <Text className="mt-2 text-[16px] font-medium text-ink underline">
+                {expanded ? 'Read less' : 'Read more'}
+              </Text>
+            </Pressable>
+          </Animated.View>
 
-          <View className="mt-8 flex-row items-center justify-between px-6">
+          <Animated.View
+            entering={enterFrom(3)}
+            className="mt-8 flex-row items-center justify-between px-6"
+          >
             <Text className="text-[26px] font-bold text-ink">
               Upcoming tours
             </Text>
             <Text className="text-[15px] font-medium text-ink underline">
               See all
             </Text>
-          </View>
+          </Animated.View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="mt-5"
-            contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}
-            snapToInterval={tourCardWidth + 16}
-            decelerationRate="fast"
-          >
-            {destination.tours.map((tour) => (
-              <TourCard
-                key={tour.id}
-                tour={tour}
-                width={tourCardWidth}
-                onPress={() => router.push(`/trip/${destination.id}`)}
-              />
-            ))}
-          </ScrollView>
+          <Animated.View entering={enterFrom(4)}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mt-5"
+              contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}
+              snapToInterval={tourCardWidth + 16}
+              decelerationRate="fast"
+            >
+              {destination.tours.map((tour) => (
+                <TourCard
+                  key={tour.id}
+                  tour={tour}
+                  width={tourCardWidth}
+                  onPress={() => router.push(`/trip/${destination.id}`)}
+                />
+              ))}
+            </ScrollView>
+          </Animated.View>
         </View>
       </ScrollView>
 
@@ -152,13 +179,9 @@ export default function DestinationScreen() {
         />
         <CircleButton
           icon={
-            <Ionicons
-              name={liked ? 'heart' : 'heart-outline'}
-              size={20}
-              color={liked ? '#FF5A5F' : '#191919'}
-            />
+            <AnimatedHeart active={liked} size={20} inactiveColor="#191919" />
           }
-          onPress={() => setLiked((v) => !v)}
+          onPress={() => toggle(destination.id)}
         />
       </View>
     </View>
