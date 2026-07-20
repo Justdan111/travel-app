@@ -3,10 +3,7 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  Text,  useWindowDimensions, View, } from 'react-native';
+import { Pressable, ScrollView, Text,  useWindowDimensions, View, } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
