@@ -6,10 +6,7 @@ import { useState } from 'react';
 import {
   Pressable,
   ScrollView,
-  Text,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+  Text,  useWindowDimensions, View, } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
